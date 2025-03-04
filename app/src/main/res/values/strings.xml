@@ -1,3 +1,25 @@
 <resources>
     <string name="app_name">FirstAid</string>
+
+    <string name="disclaimer_title">Отказ от ответственности</string>
+    <string-array name="disclaimer_text">
+        <item>Информация, представленная в данном приложении, несет ознакомительный характер и не должна рассматриваться, как руководство к действию.</item>
+        <item>Создатели не несут ответственность за любые возможные последствия  использования данного приложения.</item>
+        <item>Если вы полагаете, что у вас возникла экстренная ситуация, немедленно обратитесь к врачу или позвоните по номеру экстренной службы - 112.</item>
+    </string-array>
+    <string name="disclaimer_comment">Нажимая “Согласен”, вы подтверждаете ознакомление с настоящим Отказом от ответственности и выражаете согласие с приведенной в нем информацией.</string>
+    <string name="disclaimer_agree_button_title">Согласен</string>
+
+    <string name="main_icon_label">Главная</string>
+    <string name="bookmarks_icon_label">Закладки</string>
+    <string name="about_icon_label">О приложении</string>
+
+    <string name="questionnaire_button_title">Экстренный опросник</string>
+    <string name="guides_list_button_title">Список руководств</string>
+    <string name="hospitals_button_title">Ближайшие мед. учреждения</string>
+    <string name="legal_info_button_title">Юридическая информация</string>
+
+    <string name="bookmarks_screen_title">Закладки</string>
+    <string name="about_screen_title">О приложении</string>
+    <string name="legal_info_screen_title">Юридическая информация</string>
 </resources>
