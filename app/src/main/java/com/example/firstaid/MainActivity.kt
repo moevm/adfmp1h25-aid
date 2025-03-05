@@ -25,8 +25,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.firstaid.data.Datasource
 import com.example.firstaid.ui.AboutScreen
 import com.example.firstaid.ui.BookmarksScreen
+import com.example.firstaid.ui.LegalInformationScreen
 import com.example.firstaid.ui.MainScreen
 import com.example.firstaid.ui.theme.FirstAidTheme
 
@@ -94,9 +96,22 @@ fun FirstAidApp() {
                 navController = navController,
                 startDestination = "main"
             ) {
-                composable(Routes.Main.name) { MainScreen(navController = navController) }
+                composable(Routes.Main.name) {
+                    MainScreen(
+                        onClickQuestionaireButton = {},
+                        onClickGuidesButton = {},
+                        onClickHospitalsButton = {},
+                        onClickLegalInfoButton = { navController.navigate(Routes.LegalInfo.name) }
+                    )
+                }
                 composable(Routes.Bookmarks.name) { BookmarksScreen() }
                 composable(Routes.About.name) { AboutScreen() }
+                composable(Routes.LegalInfo.name) {
+                    LegalInformationScreen(
+                        onBackClick = { navController.navigateUp() },
+                        legalInfoList = Datasource.legalInfoList
+                    )
+                }
             }
         }
     }

@@ -19,13 +19,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.firstaid.R
-import com.example.firstaid.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun MainScreen(
+    modifier: Modifier = Modifier,
+    onClickQuestionaireButton: () -> Unit,
+    onClickLegalInfoButton: () -> Unit,
+    onClickHospitalsButton: () -> Unit,
+    onClickGuidesButton: () -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
@@ -38,14 +42,26 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavController) {
             active = false,
             onActiveChange = {}
         ) { }
-        MainPageButtonsGroup(navController = navController);
+
+        MainPageButtonsGroup(
+            onClickQuestionaireButton = onClickQuestionaireButton,
+            onClickLegalInfoButton = onClickLegalInfoButton,
+            onClickHospitalsButton = onClickHospitalsButton,
+            onClickGuidesButton = onClickGuidesButton
+        )
 
     }
 }
 
 
 @Composable
-fun MainPageButtonsGroup(navController: NavController, modifier: Modifier = Modifier) {
+fun MainPageButtonsGroup(
+    modifier: Modifier = Modifier,
+    onClickQuestionaireButton: () -> Unit,
+    onClickLegalInfoButton: () -> Unit,
+    onClickHospitalsButton: () -> Unit,
+    onClickGuidesButton: () -> Unit
+) {
     Column(
         modifier = Modifier.width(IntrinsicSize.Max),
         verticalArrangement = Arrangement.spacedBy(20.dp)
@@ -54,7 +70,7 @@ fun MainPageButtonsGroup(navController: NavController, modifier: Modifier = Modi
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
-            onClick = {},
+            onClick = onClickQuestionaireButton,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Red,
                 contentColor = Color.White
@@ -63,21 +79,21 @@ fun MainPageButtonsGroup(navController: NavController, modifier: Modifier = Modi
             Text(text = stringResource(R.string.questionnaire_button_title))
         }
         FilledTonalButton(
-            onClick = { }, modifier = Modifier
+            onClick = onClickGuidesButton, modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
             Text(text = stringResource(R.string.guides_list_button_title))
         }
         FilledTonalButton(
-            onClick = {}, modifier = Modifier
+            onClick = onClickHospitalsButton, modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
             Text(text = stringResource(R.string.hospitals_button_title))
         }
         FilledTonalButton(
-            onClick = { navController.navigate(Routes.LegalInfo.name) }, modifier = Modifier
+            onClick = onClickLegalInfoButton, modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
