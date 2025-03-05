@@ -20,6 +20,15 @@
     <string name="legal_info_button_title">Юридическая информация</string>
 
     <string name="bookmarks_screen_title">Закладки</string>
+
     <string name="about_screen_title">О приложении</string>
+    <string name="about_screen_text">Приложение, содержит различные руководства по оказанию первой помощи, юридическую информацию, а также интерактивный опросник, чтобы понять, как действовать в конкретной ситуации.</string>
+    <string name="about_screen_authors">Авторы</string>
+    <string-array name="authors">
+        <item>Малых Андрей</item>
+        <item>Сулименко Максим</item>
+        <item>Макки Карим</item>
+    </string-array>
+
     <string name="legal_info_screen_title">Юридическая информация</string>
 </resources>

@@ -16,11 +16,14 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.firstaid.ui.AboutScreen
 import com.example.firstaid.ui.BookmarksScreen
@@ -62,15 +65,24 @@ fun FirstAidApp() {
             bottomBar =
             {
                 NavigationBar {
-
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentDestination = navBackStackEntry?.destination
                     navigationItems.forEach { item ->
                         NavigationBarItem(
-                            selected = false,
+                            selected = currentDestination?.route == item.route.name,
                             icon = {
                                 Icon(item.icon, null)
                             },
                             label = { Text(item.label) },
-                            onClick = { navController.navigate(route = item.route.name) }
+                            onClick = {
+                                navController.navigate(route = item.route.name) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
                         )
 
                     }
