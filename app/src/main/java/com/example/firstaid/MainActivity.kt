@@ -104,7 +104,12 @@ fun FirstAidApp() {
                         onClickLegalInfoButton = { navController.navigate(Routes.LegalInfo.name) }
                     )
                 }
-                composable(Routes.Bookmarks.name) { BookmarksScreen() }
+                composable(Routes.Bookmarks.name) {
+                    BookmarksScreen(
+                        onBookmarkClick = {},
+                        bookmarks = Datasource.guidesList.filter { it.inBookmarks }
+                    )
+                }
                 composable(Routes.About.name) { AboutScreen() }
                 composable(Routes.LegalInfo.name) {
                     LegalInformationScreen(
