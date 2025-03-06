@@ -33,6 +33,8 @@ import com.example.firstaid.ui.DisclaimerScreen
 import com.example.firstaid.ui.LegalInformationScreen
 import com.example.firstaid.ui.MainScreen
 import com.example.firstaid.ui.theme.FirstAidTheme
+import com.example.firstaid.ui.SearchScreen
+import com.example.firstaid.ui.HospitalsMapScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -123,7 +125,8 @@ fun FirstAidApp() {
                     MainScreen(
                         onClickQuestionaireButton = {},
                         onClickGuidesButton = {},
-                        onClickHospitalsButton = {},
+                        onClickHospitalsButton = { navController.navigate(Route.Search.name) },
+                        onClickSearchBar = { navController.navigate(Route.Search.name) },
                         onClickLegalInfoButton = { navController.navigate(Route.LegalInfo.name) }
                     )
                 }
@@ -141,6 +144,19 @@ fun FirstAidApp() {
                     LegalInformationScreen(
                         onBackClick = { navController.navigateUp() },
                         legalInfoList = Datasource.legalInfoList
+                    )
+                }
+                composable(Route.Search.name) {
+                    SearchScreen(
+                        onInstitutionClick = {
+                            navController.navigate(Route.HospitalsMap.name)
+                        },
+                        onBackClick = { navController.navigateUp() }
+                    )
+                }
+                composable(Route.HospitalsMap.name) {
+                    HospitalsMapScreen(
+                        onBackClick = { navController.navigateUp() }
                     )
                 }
             }

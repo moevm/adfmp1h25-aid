@@ -41,6 +41,10 @@ android {
 
 dependencies {
 
+    implementation("com.google.maps.android:maps-compose:6.4.1")
+    implementation("com.google.android.gms:play-services-maps:18.1.0")
+    implementation ("com.google.android.material:material:1.8.0-alpha01")
+    implementation ("androidx.compose.material3:material3:1.0.0-beta03")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

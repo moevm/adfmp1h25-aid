@@ -38,4 +38,10 @@
 
     <!--  LegalInformation screen  -->
     <string name="legal_info_screen_title">Юридическая информация</string>
+
+    <!-- Other strings... -->
+    <string name="hospitals_map_title">Карта ближайших мед. учреждений</string>
+    <string name="search_screen_title">Поиск</string>
+    <string name="search_hint">Поиск</string>
+    <string name="search_suggestions_title">Популярные запросы</string>
 </resources>

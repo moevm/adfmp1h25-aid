@@ -20,6 +20,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.firstaid.R
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,19 +32,32 @@ fun MainScreen(
     onClickQuestionaireButton: () -> Unit,
     onClickLegalInfoButton: () -> Unit,
     onClickHospitalsButton: () -> Unit,
-    onClickGuidesButton: () -> Unit
+    onClickGuidesButton: () -> Unit,
+    onClickSearchBar: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
     ) {
         SearchBar(
             modifier = Modifier.padding(bottom = 100.dp, top = 20.dp),
             query = "",
+            placeholder = { Text(text = stringResource(R.string.search_hint)) },
             onQueryChange = {},
             onSearch = {},
             active = false,
-            onActiveChange = {}
+            onActiveChange = { isActive ->
+                if (isActive) {
+                    onClickSearchBar()
+                }
+            },
+            trailingIcon = {
+                IconButton(onClick = { onClickSearchBar() }) { // Clicking the icon also triggers search
+                    Icon(imageVector = Icons.Default.Search, contentDescription = "Search Icon")
+                }
+            }
         ) { }
 
         MainPageButtonsGroup(
@@ -49,10 +66,8 @@ fun MainScreen(
             onClickHospitalsButton = onClickHospitalsButton,
             onClickGuidesButton = onClickGuidesButton
         )
-
     }
 }
-
 
 @Composable
 fun MainPageButtonsGroup(
