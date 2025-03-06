@@ -125,7 +125,7 @@ fun FirstAidApp() {
                     MainScreen(
                         onClickQuestionaireButton = {},
                         onClickGuidesButton = {},
-                        onClickHospitalsButton = { navController.navigate(Route.Search.name) },
+                        onClickHospitalsButton = { navController.navigate(Route.HospitalsMap.name) },
                         onClickSearchBar = { navController.navigate(Route.Search.name) },
                         onClickLegalInfoButton = { navController.navigate(Route.LegalInfo.name) }
                     )
