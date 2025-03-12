@@ -30,6 +30,8 @@ import com.example.firstaid.data.Datasource
 import com.example.firstaid.ui.AboutScreen
 import com.example.firstaid.ui.BookmarksScreen
 import com.example.firstaid.ui.DisclaimerScreen
+import com.example.firstaid.ui.GuideDetailScreen
+import com.example.firstaid.ui.GuidesListScreen
 import com.example.firstaid.ui.LegalInformationScreen
 import com.example.firstaid.ui.MainScreen
 import com.example.firstaid.ui.theme.FirstAidTheme
@@ -109,6 +111,30 @@ fun FirstAidApp() {
                 startDestination = if (showDisclaimer) Route.Disclaimer.name else Route.Main.name
             ) {
 
+                composable(Route.GuidesList.name) {
+                    GuidesListScreen(
+                        guides = Datasource.guidesList,
+                        onGuideClick = { guideId ->
+                            navController.navigate("${Route.GuideDetail.name}/$guideId")
+                        }
+                    )
+                }
+
+                composable("${Route.GuideDetail.name}/{GUIDE_ID}") { backStackEntry ->
+                    val guideId = backStackEntry.arguments?.getString("GUIDE_ID")?.toIntOrNull() ?: -1
+                    val guide = Datasource.guidesList.find { it.id == guideId } ?: return@composable
+                    GuideDetailScreen(
+                        guide = guide,
+                        onBackClick = { navController.navigateUp() },
+                        onAddToBookmarks = {
+                            // Логика добавления в избранное
+                        },
+                        onShareClick = {
+                            // Логика поделиться
+                        }
+                    )
+                }
+
                 composable(Route.Disclaimer.name) {
                     val prefsName = stringResource(R.string.show_disclaimer_prefs_name)
 
@@ -124,7 +150,7 @@ fun FirstAidApp() {
                 composable(Route.Main.name) {
                     MainScreen(
                         onClickQuestionaireButton = {},
-                        onClickGuidesButton = {},
+                        onClickGuidesButton =  {navController.navigate(Route.GuidesList.name) },
                         onClickHospitalsButton = { navController.navigate(Route.HospitalsMap.name) },
                         onClickSearchBar = { navController.navigate(Route.Search.name) },
                         onClickLegalInfoButton = { navController.navigate(Route.LegalInfo.name) }

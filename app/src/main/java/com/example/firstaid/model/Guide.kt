@@ -1,3 +1,20 @@
 package com.example.firstaid.model
 
-data class Guide(val id: Long, val title: String, val inBookmarks: Boolean)
+data class Guide(
+    val id: Int,
+    val title: String,
+    val description: String,
+    val steps: List<Step>,
+    val inBookmarks: Boolean = false
+)
+
+data class Step(
+    val title: String,
+    val items: List<PageItem>
+)
+
+
+sealed class PageItem {
+    data class TextItem(val text: String) : PageItem()
+    data class ImageItem(val imageResId: Int) : PageItem()
+}

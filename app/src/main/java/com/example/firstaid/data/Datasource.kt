@@ -2,6 +2,8 @@ package com.example.firstaid.data
 
 import com.example.firstaid.model.Guide
 import com.example.firstaid.model.LegalInfo
+import com.example.firstaid.model.PageItem
+import com.example.firstaid.model.Step
 
 object Datasource {
     val legalInfoList = listOf(
@@ -14,9 +16,34 @@ object Datasource {
             text = "Согласно ч. 4 ст. 31 Федерального закона от 21.11.2011 г. № 323-ФЗ «Об основах охраны здоровья граждан в Российской Федерации» каждый гражданин имеет право оказывать первую помощь при наличии соответствующей подготовки и (или) навыков."
         )
     )
+
     val guidesList = listOf(
-        Guide(id = 1, title = "Вывих ноги", inBookmarks = true),
-        Guide(id = 2, title = "Пулевое ранение", inBookmarks = false),
-        Guide(id = 3, title = "Потеря сознания", inBookmarks = true)
+        Guide(
+            id = 1,
+            title = "Что делать, если человек потерял сознание?",
+            description = "Пошаговая инструкция по оказанию первой помощи при потере сознания.",
+            steps = listOf(
+                Step(
+                    title = "Шаг 1: Уложите человека",
+                    items = listOf(
+                        PageItem.TextItem("Уложите человека, если он сидит, чтобы облегчить приток крови к мозгу."),
+                        //PageItem.ImageItem(R.drawable.step1_image)
+                    )
+                ),
+                Step(
+                    title = "Шаг 2: Обеспечьте доступ кислорода",
+                    items = listOf(
+                        PageItem.TextItem("Распахните одежду на шее, откройте окно, вынесите человека на улицу, в тень и т.д.")
+                    )
+                )
+            ),
+            inBookmarks = true
+        )
+    )
+
+    val questionnaireQuestions = listOf(
+        "Есть ли у пострадавшего дыхание?",
+        "Есть ли у пострадавшего пульс?",
+        "Есть ли видимые травмы?"
     )
 }
