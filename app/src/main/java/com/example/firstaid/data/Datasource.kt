@@ -20,8 +20,8 @@ object Datasource {
     val guidesList = listOf(
         Guide(
             id = 1,
-            title = "Что делать, если человек потерял сознание?",
-            description = "Пошаговая инструкция по оказанию первой помощи при потере сознания.",
+            title = "Потеря сознания",
+            description = "Что делать, если человек потерял сознание?",
             steps = listOf(
                 Step(
                     title = "Шаг 1: Уложите человека",

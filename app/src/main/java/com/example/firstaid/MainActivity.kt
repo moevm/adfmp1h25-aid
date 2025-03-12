@@ -116,7 +116,8 @@ fun FirstAidApp() {
                         guides = Datasource.guidesList,
                         onGuideClick = { guideId ->
                             navController.navigate("${Route.GuideDetail.name}/$guideId")
-                        }
+                        },
+                        onBackClick = { navController.navigateUp() }
                     )
                 }
 
