@@ -1,5 +1,6 @@
 package com.example.firstaid.data
 
+import com.example.firstaid.R
 import com.example.firstaid.model.Guide
 import com.example.firstaid.model.LegalInfo
 import com.example.firstaid.model.PageItem
@@ -27,7 +28,7 @@ object Datasource {
                     title = "Шаг 1: Уложите человека",
                     items = listOf(
                         PageItem.TextItem("Уложите человека, если он сидит, чтобы облегчить приток крови к мозгу."),
-                        //PageItem.ImageItem(R.drawable.step1_image)
+                        PageItem.ImageItem(R.drawable.im1_1)
                     )
                 ),
                 Step(
