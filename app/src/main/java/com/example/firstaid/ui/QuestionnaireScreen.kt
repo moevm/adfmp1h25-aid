@@ -3,10 +3,13 @@ package com.example.firstaid.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -24,7 +27,7 @@ import com.example.firstaid.model.Question
 fun QuestionnaireScreen(
     questions: List<Question>,
     guides: List<Guide>,
-    onFinish: (List<Guide>) -> Unit // Колбэк для завершения опросника
+    onFinish: (List<Guide>) -> Unit
 ) {
     val currentQuestionIndex = remember { mutableStateOf(0) }
     val selectedTags = remember { mutableStateListOf<String>() }
@@ -33,42 +36,48 @@ fun QuestionnaireScreen(
 
     Column(
         modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center, // Центрируем по вертикали
+        horizontalAlignment = Alignment.CenterHorizontally // Центрируем по горизонтали
     ) {
         // Текст вопроса
         Text(
             text = currentQuestion.text,
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(vertical = 16.dp)
+            modifier = Modifier.padding(bottom = 32.dp) // Отступ снизу
         )
 
-        // Кнопки "Да" и "Нет"
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.padding(vertical = 16.dp)
-        ) {
-            Button(onClick = {
-                // При ответе "Да" добавляем тег
+        // Кнопка "Да"
+        OutlinedButton(
+            onClick = {
                 selectedTags.add(currentQuestion.tag)
                 goToNextQuestion(currentQuestionIndex, questions, selectedTags, guides, onFinish)
-            }) {
-                Text(text = "Да")
-            }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp), // Отступ между кнопками
+            shape = RoundedCornerShape(8.dp) // Скругленные углы
+        ) {
+            Text(text = "Да", style = MaterialTheme.typography.bodyLarge)
+        }
 
-            Button(onClick = {
-                // При ответе "Нет" просто переходим к следующему вопросу
+        // Кнопка "Нет"
+        OutlinedButton(
+            onClick = {
                 goToNextQuestion(currentQuestionIndex, questions, selectedTags, guides, onFinish)
-            }) {
-                Text(text = "Нет")
-            }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Text(text = "Нет", style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
 
-// Функция для перехода к следующему вопросу или завершения опросника
 private fun goToNextQuestion(
     currentQuestionIndex: MutableState<Int>,
     questions: List<Question>,
