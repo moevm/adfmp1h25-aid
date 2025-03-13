@@ -1,6 +1,7 @@
 package com.example.firstaid.ui
 
 import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,7 +37,7 @@ fun GuideDetailScreen(
     context: Context,
     guide: Guide,
     onBackClick: () -> Unit,
-    onBookmarkUpdate: () -> Unit, // Новый колбэк
+    onBookmarkUpdate: () -> Unit,
     onShareClick: () -> Unit
 ) {
     val isBookmarked = remember { mutableStateOf(BookmarkManager.isBookmarked(context, guide.id)) }
@@ -86,7 +87,32 @@ fun GuideDetailScreen(
             }
 
             IconButton(
-                onClick = onShareClick,
+                onClick = {
+
+                    val shareIntent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(
+                            Intent.EXTRA_TEXT,
+                            "Руководство по первой помощи: ${guide.title}\n\n" +
+                                    "${guide.description}\n\n" +
+                                    "Шаги:\n${
+                                        guide.steps.joinToString("\n") { step ->
+                                            "${step.title}: ${
+                                                step.items.filterIsInstance<PageItem.TextItem>()
+                                                    .joinToString(" ") { it.text }
+                                            }"
+                                        }
+                                    }"
+                        )
+                        type = "text/plain"
+                    }
+                    context.startActivity(
+                        Intent.createChooser(
+                            shareIntent,
+                            "Поделиться руководством"
+                        )
+                    )
+                },
                 modifier = Modifier.size(48.dp)
             ) {
                 Icon(
@@ -94,18 +120,16 @@ fun GuideDetailScreen(
                     contentDescription = "Поделиться"
                 )
             }
+
         }
 
-        // Описание руководства
         Text(
             text = guide.description,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Шаги руководства
         guide.steps.forEach { step ->
-            // Заголовок шага
             Text(
                 text = step.title,
                 style = MaterialTheme.typography.titleMedium,
@@ -113,7 +137,6 @@ fun GuideDetailScreen(
                 modifier = Modifier.padding(vertical = 8.dp)
             )
 
-            // Элементы шага
             step.items.forEach { item ->
                 when (item) {
                     is PageItem.TextItem -> {
