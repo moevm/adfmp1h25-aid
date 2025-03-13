@@ -1,9 +1,18 @@
 package com.example.firstaid.ui
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,29 +29,42 @@ fun QuestionnaireResultScreen(
 ) {
     Column(
         modifier = Modifier
+            .fillMaxSize()
             .padding(16.dp)
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+        ) {
+            IconButton(
+                onClick = onBackClick,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Назад"
+                )
+            }
+        }
+
         Text(
             text = "Подходящие руководства",
             style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(vertical = 16.dp)
+            modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        matchingGuides.forEach { guide ->
-            GuideCard(
-                guide = guide,
-                onClick = { onGuideClick(guide.id) },
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-        }
-
-        Button(
-            onClick = onBackClick,
-            modifier = Modifier.padding(top = 16.dp)
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
-            Text(text = "Назад")
+            matchingGuides.forEach { guide ->
+                GuideCard(
+                    guide = guide,
+                    onClick = { onGuideClick(guide.id) },
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
         }
     }
 }
