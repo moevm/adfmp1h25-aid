@@ -38,6 +38,8 @@ import com.example.firstaid.ui.MainScreen
 import com.example.firstaid.ui.theme.FirstAidTheme
 import com.example.firstaid.ui.SearchScreen
 import com.example.firstaid.ui.HospitalsMapScreen
+import com.example.firstaid.ui.QuestionnaireResultScreen
+import com.example.firstaid.ui.QuestionnaireScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -150,7 +152,7 @@ fun FirstAidApp() {
 
                 composable(Route.Main.name) {
                     MainScreen(
-                        onClickQuestionaireButton = {},
+                        onClickQuestionaireButton = {navController.navigate(Route.Questionnaire.name)},
                         onClickGuidesButton =  {navController.navigate(Route.GuidesList.name) },
                         onClickHospitalsButton = { navController.navigate(Route.HospitalsMap.name) },
                         onClickSearchBar = { navController.navigate(Route.Search.name) },
@@ -186,6 +188,31 @@ fun FirstAidApp() {
                 composable(Route.HospitalsMap.name) {
                     HospitalsMapScreen(
                         onBackClick = { navController.navigateUp() }
+                    )
+                }
+
+                composable(Route.Questionnaire.name) {
+                    QuestionnaireScreen(
+                        questions = Datasource.questions,
+                        guides = Datasource.guidesList,
+                        onFinish = { matchingGuides ->
+                            navController.navigate("${Route.QuestionnaireResult.name}/${matchingGuides.joinToString(",") { it.id.toString() }}")
+                        }
+                    )
+                }
+
+                composable("${Route.QuestionnaireResult.name}/{GUIDE_IDS}") { backStackEntry ->
+                    val guideIds = backStackEntry.arguments?.getString("GUIDE_IDS")
+                        ?.split(",")
+                        ?.mapNotNull { it.toIntOrNull() } ?: emptyList()
+                    val matchingGuides = Datasource.guidesList.filter { it.id in guideIds }
+
+                    QuestionnaireResultScreen(
+                        matchingGuides = matchingGuides,
+                        onBackClick = { navController.navigateUp() },
+                        onGuideClick = { guideId ->
+                            navController.navigate("${Route.GuideDetail.name}/$guideId")
+                        }
                     )
                 }
             }

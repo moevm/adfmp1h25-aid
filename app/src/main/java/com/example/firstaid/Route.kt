@@ -12,5 +12,8 @@ sealed class Route(val name: String) {
 
     data object GuidesList : Route("guidesList")
     data object GuideDetail : Route("guideDetail")
+
+    data object Questionnaire : Route("questionnaire")
+    data object QuestionnaireResult : Route("questionnaireResult")
 }
 
