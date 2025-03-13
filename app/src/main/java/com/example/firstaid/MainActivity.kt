@@ -89,7 +89,7 @@ fun FirstAidApp() {
                                     onClick = {
                                         navController.navigate(route = item.route.name) {
                                             popUpTo(navController.graph.findStartDestination().id) {
-                                                saveState = true
+                                                saveState = false
                                             }
                                             launchSingleTop = true
                                             restoreState = true
