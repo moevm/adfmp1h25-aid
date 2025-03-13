@@ -37,8 +37,7 @@ object Datasource {
                         PageItem.TextItem("Распахните одежду на шее, откройте окно, вынесите человека на улицу, в тень и т.д.")
                     )
                 )
-            ),
-            inBookmarks = true
+            )
         )
     )
 

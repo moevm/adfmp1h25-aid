@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -121,18 +122,17 @@ fun FirstAidApp() {
                     )
                 }
 
-                composable("${Route.GuideDetail.name}/{GUIDE_ID}") { backStackEntry ->
+                composable(Route.GuideDetail.name + "/{GUIDE_ID}") { backStackEntry ->
+                    val context = LocalContext.current
                     val guideId = backStackEntry.arguments?.getString("GUIDE_ID")?.toIntOrNull() ?: -1
                     val guide = Datasource.guidesList.find { it.id == guideId } ?: return@composable
+
                     GuideDetailScreen(
+                        context = context,
                         guide = guide,
                         onBackClick = { navController.navigateUp() },
-                        onAddToBookmarks = {
-                            // Логика добавления в избранное
-                        },
-                        onShareClick = {
-                            // Логика поделиться
-                        }
+                        onBookmarkUpdate = { /* Здесь можно обновить другие экраны при необходимости */ },
+                        onShareClick = { /* Логика поделиться */ }
                     )
                 }
 
@@ -160,8 +160,10 @@ fun FirstAidApp() {
 
                 composable(Route.Bookmarks.name) {
                     BookmarksScreen(
-                        onBookmarkClick = {},
-                        bookmarks = Datasource.guidesList.filter { it.inBookmarks }
+                        onBookmarkClick = { guideId ->
+                            navController.navigate("${Route.GuideDetail.name}/$guideId")
+                        },
+                        onBackClick = { navController.navigateUp() }
                     )
                 }
 

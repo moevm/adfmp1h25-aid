@@ -1,5 +1,6 @@
 package com.example.firstaid.ui
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,39 +13,45 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.firstaid.data.BookmarkManager
 import com.example.firstaid.model.Guide
 import com.example.firstaid.model.PageItem
 
 @Composable
 fun GuideDetailScreen(
+    context: Context,
     guide: Guide,
     onBackClick: () -> Unit,
-    onAddToBookmarks: () -> Unit,
+    onBookmarkUpdate: () -> Unit, // Новый колбэк
     onShareClick: () -> Unit
 ) {
+    val isBookmarked = remember { mutableStateOf(BookmarkManager.isBookmarked(context, guide.id)) }
+
     Column(
         modifier = Modifier
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        // Верхняя панель с кнопками и заголовком
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
         ) {
-            // Кнопка "Назад"
             IconButton(
                 onClick = onBackClick,
                 modifier = Modifier.size(48.dp)
@@ -55,7 +62,6 @@ fun GuideDetailScreen(
                 )
             }
 
-            // Название руководства
             Text(
                 text = guide.title,
                 style = MaterialTheme.typography.titleLarge,
@@ -64,18 +70,21 @@ fun GuideDetailScreen(
                     .padding(horizontal = 8.dp)
             )
 
-            // Кнопка "Добавить в избранное"
             IconButton(
-                onClick = onAddToBookmarks,
+                onClick = {
+                    BookmarkManager.toggleBookmark(context, guide.id)
+                    isBookmarked.value = !isBookmarked.value
+                    onBookmarkUpdate()
+                },
                 modifier = Modifier.size(48.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = "Добавить в избранное"
+                    imageVector = if (isBookmarked.value) Icons.Filled.Favorite else Icons.Outlined.Favorite,
+                    contentDescription = "Избранное",
+                    tint = if (isBookmarked.value) Color.Red else MaterialTheme.colorScheme.onSurface
                 )
             }
 
-            // Кнопка "Поделиться"
             IconButton(
                 onClick = onShareClick,
                 modifier = Modifier.size(48.dp)

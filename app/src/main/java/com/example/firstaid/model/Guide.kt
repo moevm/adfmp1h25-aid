@@ -5,7 +5,6 @@ data class Guide(
     val title: String,
     val description: String,
     val steps: List<Step>,
-    val inBookmarks: Boolean = false
 )
 
 data class Step(
