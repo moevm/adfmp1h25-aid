@@ -4,6 +4,7 @@ import com.example.firstaid.R
 import com.example.firstaid.model.Guide
 import com.example.firstaid.model.LegalInfo
 import com.example.firstaid.model.PageItem
+import com.example.firstaid.model.Question
 import com.example.firstaid.model.Step
 
 object Datasource {
@@ -15,6 +16,24 @@ object Datasource {
         LegalInfo(
             title = "Кто имеет право на оказание первой помощи?",
             text = "Согласно ч. 4 ст. 31 Федерального закона от 21.11.2011 г. № 323-ФЗ «Об основах охраны здоровья граждан в Российской Федерации» каждый гражданин имеет право оказывать первую помощь при наличии соответствующей подготовки и (или) навыков."
+        )
+    )
+
+    val questions = listOf(
+        Question(
+            id = 1,
+            text = "Есть ли у пострадавшего дыхание?",
+            tag = "no_breathing"
+        ),
+        Question(
+            id = 2,
+            text = "Есть ли у пострадавшего пульс?",
+            tag = "no_pulse"
+        ),
+        Question(
+            id = 3,
+            text = "Есть ли видимые травмы?",
+            tag = "visible_injuries"
         )
     )
 
@@ -37,7 +56,8 @@ object Datasource {
                         PageItem.TextItem("Распахните одежду на шее, откройте окно, вынесите человека на улицу, в тень и т.д.")
                     )
                 )
-            )
+            ),
+            tags = listOf("no_breathing")
         )
     )
 
