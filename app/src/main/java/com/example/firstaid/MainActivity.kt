@@ -209,7 +209,9 @@ fun FirstAidApp() {
 
                     QuestionnaireResultScreen(
                         matchingGuides = matchingGuides,
-                        onBackClick = { navController.navigateUp() },
+                        onBackClick = {
+                            navController.popBackStack(Route.Main.name, inclusive = false) // Возврат на главный экран
+                        },
                         onGuideClick = { guideId ->
                             navController.navigate("${Route.GuideDetail.name}/$guideId")
                         }
