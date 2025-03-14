@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.example.firstaid.R
 import com.example.firstaid.model.Guide
 import com.example.firstaid.model.Hospital
+import com.example.firstaid.model.HospitalType
 import androidx.compose.material3.AssistChipDefaults
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,15 +47,13 @@ fun SearchScreen(
     onGuideClick: (Int) -> Unit
 ) {
     var query by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf<String?>(null) }
+    var selectedCategory by remember { mutableStateOf<HospitalType?>(null) }
     val scrollState = rememberScrollState()
 
-    // Define category filters with keywords
-    val categoryFilters = mapOf(
-        "Учреждения" to setOf("Больница", "Госпиталь", "Центр"),
-        "Травмпункты" to setOf("Травмпункт"),
-        "Поликлиники" to setOf("Поликлиника")
-    )
+    // Get category filters from HospitalType enum
+    val categoryFilters = HospitalType.values().associate {
+        it.value to setOf(it)
+    }
 
     // Filter hospitals based on query and category
     val filteredHospitals = hospitals.filter { hospital ->
@@ -62,9 +61,7 @@ fun SearchScreen(
                 hospital.address.contains(query, ignoreCase = true)
 
         val matchesCategory = selectedCategory?.let { category ->
-            categoryFilters[category]?.any { keyword ->
-                hospital.name.contains(keyword, ignoreCase = true)
-            } ?: false
+            hospital.type == category
         } ?: true
 
         matchesQuery && matchesCategory
@@ -115,13 +112,13 @@ fun SearchScreen(
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                categoryFilters.keys.forEach { category ->
-                    val isSelected = selectedCategory == category
+                HospitalType.values().forEach { hospitalType ->
+                    val isSelected = selectedCategory == hospitalType
                     AssistChip(
                         onClick = {
-                            selectedCategory = if (isSelected) null else category
+                            selectedCategory = if (isSelected) null else hospitalType
                         },
-                        label = { Text(category) },
+                        label = { Text(hospitalType.value) },
                         colors = if (isSelected) {
                             AssistChipDefaults.assistChipColors(
                                 containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -141,7 +138,7 @@ fun SearchScreen(
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(8.dp)
                 )
-                Column(modifier = Modifier.verticalScroll(scrollState)) {
+                Column {
                     filteredHospitals.forEach { hospital ->
                         SuggestionCard(
                             suggestion = hospital.name,
@@ -158,7 +155,7 @@ fun SearchScreen(
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(8.dp)
                 )
-                Column(modifier = Modifier.verticalScroll(scrollState)) {
+                Column {
                     filteredGuides.forEach { guide ->
                         SuggestionCard(
                             suggestion = guide.title,
