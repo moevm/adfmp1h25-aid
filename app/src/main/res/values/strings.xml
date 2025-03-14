@@ -48,4 +48,8 @@
     <string name="search_screen_title">Поиск</string>
     <string name="search_hint">Поиск</string>
     <string name="search_suggestions_title">Популярные запросы</string>
+
+    <string name="emergency_call_button_title">Звонок в экстренные службы</string>
+    <string name="emergency_dialog_title">Экстренные номера</string>
+    <string name="ok">ОК</string>
 </resources>
