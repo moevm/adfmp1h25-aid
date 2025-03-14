@@ -36,23 +36,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.firstaid.R
 import com.example.firstaid.model.Guide
-import kotlinx.coroutines.launch
+import com.example.firstaid.model.Hospital
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    onInstitutionClick: (String) -> Unit,
+    onInstitutionClick: (Int) -> Unit,
     onBackClick: () -> Unit,
-    guides: List<Guide>,  // Add guides parameter
-    onGuideClick: (Int) -> Unit  // Add guide click callback
+    guides: List<Guide>,
+    hospitals: List<Hospital>,
+    onGuideClick: (Int) -> Unit
 ) {
     var query by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
+    // Hospital suggestions (can be replaced with dynamic data later)
     val defaultOrganizationSuggestions = listOf("Больница №1", "Станция №7")
     val defaultGuideSuggestions = listOf("Потеря сознания", "Ножевое ранение", "Вывих руки")
+
+
 
     val categories = listOf("Учреждения", "Травмпункты", "Поликлиники")
     Scaffold(
@@ -115,25 +120,21 @@ fun SearchScreen(
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(8.dp)
             )
-            Column(
-                modifier = Modifier.verticalScroll(scrollState)
-            ) {
-                defaultOrganizationSuggestions.forEach { suggestion ->
+            Column(modifier = Modifier.verticalScroll(scrollState)) {
+                hospitals.forEach { hospital ->
                     SuggestionCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 4.dp),
-                        suggestion = suggestion,
+                        suggestion = hospital.name, // Use hospital.name
                         onClick = {
-                            coroutineScope.launch {
-                                snackbarHostState.showSnackbar("Coming Soon...")  // FIX: Use snackbarHostState properly
-                            }
+                            onInstitutionClick(hospital.id) // Pass hospital.id
                         }
                     )
                 }
             }
 
-            // "Руководство" Section
+            // "Руководство" Section - for guides
             Text(
                 text = "Руководство",
                 style = MaterialTheme.typography.titleMedium,
@@ -142,14 +143,14 @@ fun SearchScreen(
             Column(
                 modifier = Modifier.verticalScroll(scrollState)
             ) {
-                guides.forEach { guide ->  // Use actual guides instead of default suggestions
+                guides.forEach { guide ->
                     SuggestionCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 4.dp),
                         suggestion = guide.title,
                         onClick = {
-                            onGuideClick(guide.id)  // Use the guide ID for navigation
+                            onGuideClick(guide.id)
                         }
                     )
                 }
@@ -157,7 +158,6 @@ fun SearchScreen(
         }
     }
 }
-
 
 @Composable
 fun SuggestionCard(
@@ -177,4 +177,3 @@ fun SuggestionCard(
         )
     }
 }
-
