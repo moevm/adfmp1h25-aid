@@ -23,10 +23,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.firstaid.data.Datasource
 import com.example.firstaid.ui.AboutScreen
 import com.example.firstaid.ui.BookmarksScreen
@@ -69,7 +71,8 @@ fun FirstAidApp() {
     val navigationItems = listOf(NavBarItem.Main, NavBarItem.Bookmarks, NavBarItem.About)
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    val routesWithoutBottomBar = listOf(Route.Disclaimer.name, Route.Search.name, Route.HospitalsMap.name)
+    val routesWithoutBottomBar =
+        listOf(Route.Disclaimer.name, Route.Search.name, Route.HospitalsMap.name)
 
     FirstAidTheme {
         Scaffold(modifier = Modifier.fillMaxSize(),
@@ -122,7 +125,8 @@ fun FirstAidApp() {
 
                 composable(Route.GuideDetail.name + "/{GUIDE_ID}") { backStackEntry ->
                     val context = LocalContext.current
-                    val guideId = backStackEntry.arguments?.getString("GUIDE_ID")?.toIntOrNull() ?: -1
+                    val guideId =
+                        backStackEntry.arguments?.getString("GUIDE_ID")?.toIntOrNull() ?: -1
                     val guide = Datasource.guidesList.find { it.id == guideId } ?: return@composable
 
                     GuideDetailScreen(
@@ -137,6 +141,7 @@ fun FirstAidApp() {
                 composable(Route.Disclaimer.name) {
                     val prefsName = stringResource(R.string.show_disclaimer_prefs_name)
                     DisclaimerScreen(onAgreeClick = {
+                        // Disable disclaimer on application startup
                         val editor = MainActivity.settingsSharedPreferences.edit()
                         editor.putBoolean(prefsName, false)
                         editor.apply()
@@ -148,7 +153,6 @@ fun FirstAidApp() {
                     MainScreen(
                         onClickQuestionaireButton = { navController.navigate(Route.Questionnaire.name) },
                         onClickGuidesButton = { navController.navigate(Route.GuidesList.name) },
-                        // Update this so the Hospitals button navigates to our HospitalScreen instead of HospitalsMapScreen
                         onClickHospitalsButton = { navController.navigate(Route.HospitalsMap.name) },
                         onClickSearchBar = { navController.navigate(Route.Search.name) },
                         onClickLegalInfoButton = { navController.navigate(Route.LegalInfo.name) }
@@ -185,10 +189,18 @@ fun FirstAidApp() {
                         }
                     )
                 }
-
-                composable(Route.HospitalsMap.name) {
+                composable(
+                    Route.HospitalsMap.name + "?hospitalId={HOSPITAL_ID}",
+                    arguments = listOf(navArgument("HOSPITAL_ID") {
+                        type = NavType.IntType
+                        defaultValue = -1
+                    })
+                ) { navBackStackEntry ->
+                    val hospitalId = navBackStackEntry.arguments?.getInt("HOSPITAL_ID") ?: -1
                     HospitalsMapScreen(
-                        onBackClick = { navController.navigateUp() }
+                        hospitalId = hospitalId,
+                        onBackClick = { navController.navigateUp() },
+                        onClickSearchBar = { navController.navigate(Route.Search.name) }
                     )
                 }
 
@@ -197,7 +209,13 @@ fun FirstAidApp() {
                         questions = Datasource.questions,
                         guides = Datasource.guidesList,
                         onFinish = { matchingGuides ->
-                            navController.navigate("${Route.QuestionnaireResult.name}/${matchingGuides.joinToString(",") { it.id.toString() }}")
+                            navController.navigate(
+                                "${Route.QuestionnaireResult.name}/${
+                                    matchingGuides.joinToString(
+                                        ","
+                                    ) { it.id.toString() }
+                                }"
+                            )
                         }
                     )
                 }
@@ -220,12 +238,15 @@ fun FirstAidApp() {
                 }
 
                 composable("${Route.HospitalDetail.name}/{HOSPITAL_ID}") { backStackEntry ->
-                    val hospitalId = backStackEntry.arguments?.getString("HOSPITAL_ID")?.toIntOrNull() ?: -1
-                    val hospital = Datasource.hospitalsList.firstOrNull { it.id == hospitalId } ?: return@composable
+                    val hospitalId =
+                        backStackEntry.arguments?.getString("HOSPITAL_ID")?.toIntOrNull() ?: -1
+                    val hospital = Datasource.hospitalsList.firstOrNull { it.id == hospitalId }
+                        ?: return@composable
 
                     HospitalDetailScreen(
                         hospital = hospital,
-                        onBackClick = { navController.navigateUp() }
+                        onBackClick = { navController.navigateUp() },
+                        onToHospitalMapClick = { navController.navigate(Route.HospitalsMap.name + "?hospitalId=${hospital.id}") }
                     )
                 }
             }
