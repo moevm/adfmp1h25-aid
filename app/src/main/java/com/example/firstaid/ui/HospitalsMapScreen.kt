@@ -108,11 +108,11 @@ fun OpenStreetMapView(context: Context) {
                 overlays.add(myLocationOverlay)
 
                 val hospitalLocations = listOf(
-                    org.osmdroid.util.GeoPoint(59.9386, 30.3141),
-                    org.osmdroid.util.GeoPoint(59.9275, 30.3508),
-                    org.osmdroid.util.GeoPoint(59.9600, 30.2955),
-                    org.osmdroid.util.GeoPoint(59.9450, 30.3200),
-                    org.osmdroid.util.GeoPoint(59.9200, 30.3300)
+                    org.osmdroid.util.GeoPoint(60.0922, 30.2368), // Больница №1
+                    org.osmdroid.util.GeoPoint(59.9447, 30.2756), // Поликлиника №5
+                    org.osmdroid.util.GeoPoint(59.9434, 30.2759), // Травмпункт №3
+                    org.osmdroid.util.GeoPoint(59.9709, 30.3099), // Станция №1
+                    org.osmdroid.util.GeoPoint(59.8737, 30.3638) // Отделение экстренной медицинской помощи
                 )
 
                 hospitalLocations.forEach { geoPoint ->
