@@ -47,12 +47,15 @@ import androidx.compose.material3.SnackbarHost
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
+import com.example.firstaid.model.Guide
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     onInstitutionClick: (String) -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    guides: List<Guide>,  // Add guides parameter
+    onGuideClick: (Int) -> Unit  // Add guide click callback
 ) {
     var query by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
@@ -150,16 +153,14 @@ fun SearchScreen(
             Column(
                 modifier = Modifier.verticalScroll(scrollState)
             ) {
-                defaultGuideSuggestions.forEach { suggestion ->
+                guides.forEach { guide ->  // Use actual guides instead of default suggestions
                     SuggestionCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 4.dp),
-                        suggestion = suggestion,
+                        suggestion = guide.title,
                         onClick = {
-                            coroutineScope.launch {
-                                snackbarHostState.showSnackbar("Coming Soon...")  // FIX: Use snackbarHostState properly
-                            }
+                            onGuideClick(guide.id)  // Use the guide ID for navigation
                         }
                     )
                 }
