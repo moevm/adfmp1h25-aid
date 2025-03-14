@@ -44,21 +44,96 @@ object Datasource {
             description = "Что делать, если человек потерял сознание?",
             steps = listOf(
                 Step(
-                    title = "Шаг 1: Уложите человека",
+                    title = "1. Проверка безопасности",
                     items = listOf(
-                        PageItem.TextItem("Уложите человека, если он сидит, чтобы облегчить приток крови к мозгу."),
+                        PageItem.TextItem("Убедитесь, что окружающая обстановка безопасна"),
                         PageItem.ImageItem(R.drawable.im1_1)
                     )
                 ),
                 Step(
-                    title = "Шаг 2: Обеспечьте доступ кислорода",
+                    title = "2. Проверка реакции",
                     items = listOf(
-                        PageItem.TextItem("Распахните одежду на шее, откройте окно, вынесите человека на улицу, в тень и т.д.")
+                        PageItem.TextItem("Аккуратно потрясите за плечи и громко спросите: «Вы в порядке?»")
                     )
                 )
             ),
-            tags = listOf("no_breathing")
+            tags = listOf("consciousness_loss")
+        ),
+        Guide(
+            id = 2,
+            title = "Сердечно-легочная реанимация",
+            description = "Действия при отсутствии дыхания и пульса",
+            steps = listOf(
+                Step(
+                    title = "1. Вызов помощи",
+                    items = listOf(
+                        PageItem.TextItem("Позвоните 112 или вызовите скорую помощь"),
+                        //PageItem.ImageItem(R.drawable.im2_1)
+                    )
+                ),
+                Step(
+                    title = "2. Непрямой массаж сердца",
+                    items = listOf(
+                        PageItem.TextItem("Надавливайте на грудину с частотой 100-120 раз в минуту")
+                    )
+                )
+            ),
+            tags = listOf("no_breathing", "no_pulse")
+        ),
+        Guide(
+            id = 3,
+            title = "Первая помощь при кровотечении",
+            description = "Остановка сильного кровотечения",
+            steps = listOf(
+                Step(
+                    title = "1. Давление на рану",
+                    items = listOf(
+                        PageItem.TextItem("Наложите стерильную повязку и сильно надавите"),
+                        //PageItem.ImageItem(R.drawable.im3_1)
+                    )
+                ),
+                Step(
+                    title = "2. Наложение жгута",
+                    items = listOf(
+                        PageItem.TextItem("Используйте жгут только при артериальном кровотечении")
+                    )
+                )
+            ),
+            tags = listOf("visible_injuries")
+        ),
+        Guide(
+            id = 4,
+            title = "Общие рекомендации",
+            description = "Базовые действия первой помощи",
+            steps = listOf(
+                Step(
+                    title = "1. Оценка ситуации",
+                    items = listOf(
+                        PageItem.TextItem("Убедитесь в отсутствии опасности для себя и пострадавшего")
+                    )
+                ),
+                Step(
+                    title = "2. Вызов скорой помощи",
+                    items = listOf(
+                        PageItem.TextItem("Наберите 112 и четко опишите ситуацию")
+                    )
+                )
+            ),
+            tags = listOf("general")
         )
     )
+
+    // Функция фильтрации (добавить в объект Datasource)
+    fun getMatchingGuides(selectedTags: List<String>): List<Guide> {
+        val matched = guidesList.filter { guide ->
+            guide.tags.any { it in selectedTags }
+        }
+
+        return if (matched.isEmpty()) {
+            listOf(guidesList.first { it.tags.contains("general") })
+        } else {
+            matched.sortedByDescending { it.tags.size }
+        }
+    }
 
 }
