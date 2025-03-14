@@ -137,6 +137,7 @@ fun FirstAidApp() {
                 composable(Route.Disclaimer.name) {
                     val prefsName = stringResource(R.string.show_disclaimer_prefs_name)
                     DisclaimerScreen(onAgreeClick = {
+                        // Disable disclaimer on application startup
                         val editor = MainActivity.settingsSharedPreferences.edit()
                         editor.putBoolean(prefsName, false)
                         editor.apply()
@@ -185,10 +186,10 @@ fun FirstAidApp() {
                         }
                     )
                 }
-
                 composable(Route.HospitalsMap.name) {
                     HospitalsMapScreen(
-                        onBackClick = { navController.navigateUp() }
+                        onBackClick = { navController.navigateUp() },
+                        onClickSearchBar = { navController.navigate(Route.Search.name) }
                     )
                 }
 
@@ -197,7 +198,13 @@ fun FirstAidApp() {
                         questions = Datasource.questions,
                         guides = Datasource.guidesList,
                         onFinish = { matchingGuides ->
-                            navController.navigate("${Route.QuestionnaireResult.name}/${matchingGuides.joinToString(",") { it.id.toString() }}")
+                            navController.navigate(
+                                "${Route.QuestionnaireResult.name}/${
+                                    matchingGuides.joinToString(
+                                        ","
+                                    ) { it.id.toString() }
+                                }"
+                            )
                         }
                     )
                 }

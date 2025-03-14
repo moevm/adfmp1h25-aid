@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import org.osmdroid.api.IMapController
 import org.osmdroid.config.Configuration
@@ -29,7 +30,8 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HospitalsMapScreen(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onClickSearchBar: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -38,12 +40,17 @@ fun HospitalsMapScreen(
             TopAppBar(
                 title = {
                     SearchBar(
+                        modifier = Modifier.padding(10.dp),
                         query = "",
                         onQueryChange = {},
                         onSearch = {},
                         active = false,
-                        onActiveChange = {},
-                        placeholder = { Text("Search hospitals...") },
+                        onActiveChange = { isActive ->
+                            if (isActive) {
+                                onClickSearchBar()
+                            }
+                        },
+                        placeholder = { Text("Поиск") },
                         trailingIcon = {
                             IconButton(onClick = { /* Handle search */ }) {
                                 Icon(
