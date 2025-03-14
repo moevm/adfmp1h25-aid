@@ -1,7 +1,6 @@
 package com.example.firstaid.model
 import org.osmdroid.util.GeoPoint
 
-
 data class Hospital(
     val id: Int,
     val name: String,
