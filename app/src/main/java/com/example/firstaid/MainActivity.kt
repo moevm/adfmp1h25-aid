@@ -195,8 +195,10 @@ fun FirstAidApp() {
                     QuestionnaireScreen(
                         questions = Datasource.questions,
                         guides = Datasource.guidesList,
-                        onFinish = { matchingGuides ->
-                            navController.navigate("${Route.QuestionnaireResult.name}/${matchingGuides.joinToString(",") { it.id.toString() }}")
+                        onFinish = { selectedTags ->
+                            val matchingGuides = Datasource.getMatchingGuides(selectedTags)
+                            val guideIds = matchingGuides.joinToString(",") { it.id.toString() }
+                            navController.navigate("${Route.QuestionnaireResult.name}/$guideIds")
                         }
                     )
                 }

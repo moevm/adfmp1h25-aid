@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.firstaid.data.Datasource
 import com.example.firstaid.model.Guide
 import com.example.firstaid.model.Question
 
@@ -81,16 +82,15 @@ fun QuestionnaireScreen(
 private fun goToNextQuestion(
     currentQuestionIndex: MutableState<Int>,
     questions: List<Question>,
-    selectedTags: List<String>,
+    selectedTags: MutableList<String>,
     guides: List<Guide>,
     onFinish: (List<Guide>) -> Unit
 ) {
     if (currentQuestionIndex.value < questions.size - 1) {
         currentQuestionIndex.value++
     } else {
-        val matchingGuides = guides.filter { guide ->
-            guide.tags.any { it in selectedTags }
-        }
+        // Используем функцию фильтрации
+        val matchingGuides = Datasource.getMatchingGuides(selectedTags)
         onFinish(matchingGuides)
     }
 }
