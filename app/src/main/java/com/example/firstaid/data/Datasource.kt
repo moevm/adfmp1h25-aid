@@ -6,6 +6,7 @@ import com.example.firstaid.model.LegalInfo
 import com.example.firstaid.model.PageItem
 import com.example.firstaid.model.Question
 import com.example.firstaid.model.Step
+import com.example.firstaid.model.Hospital
 
 object Datasource {
     val legalInfoList = listOf(
