@@ -33,6 +33,7 @@ import com.example.firstaid.ui.BookmarksScreen
 import com.example.firstaid.ui.DisclaimerScreen
 import com.example.firstaid.ui.GuideDetailScreen
 import com.example.firstaid.ui.GuidesListScreen
+import com.example.firstaid.ui.HospitalDetailScreen
 import com.example.firstaid.ui.HospitalsMapScreen
 import com.example.firstaid.ui.LegalInformationScreen
 import com.example.firstaid.ui.MainScreen
@@ -40,7 +41,6 @@ import com.example.firstaid.ui.QuestionnaireResultScreen
 import com.example.firstaid.ui.QuestionnaireScreen
 import com.example.firstaid.ui.SearchScreen
 import com.example.firstaid.ui.theme.FirstAidTheme
-
 
 class MainActivity : ComponentActivity() {
     companion object {
@@ -56,7 +56,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
 sealed class NavBarItem(val route: Route, val label: String, val icon: ImageVector) {
     data object Main : NavBarItem(Route.Main, "Главная", Icons.Outlined.Home)
@@ -75,29 +74,25 @@ fun FirstAidApp() {
     FirstAidTheme {
         Scaffold(modifier = Modifier.fillMaxSize(),
             bottomBar = {
-                when (currentDestination?.route) {
-                    in routesWithoutBottomBar -> {}
-                    else -> {
-                        NavigationBar {
-                            navigationItems.forEach { item ->
-                                NavigationBarItem(
-                                    selected = currentDestination?.route == item.route.name,
-                                    icon = {
-                                        Icon(item.icon, null)
-                                    },
-                                    label = { Text(item.label) },
-                                    onClick = {
-                                        navController.navigate(route = item.route.name) {
-                                            popUpTo(navController.graph.findStartDestination().id) {
-                                                saveState = false
-                                            }
-                                            launchSingleTop = true
-                                            restoreState = true
+                if (currentDestination?.route !in routesWithoutBottomBar) {
+                    NavigationBar {
+                        navigationItems.forEach { item ->
+                            NavigationBarItem(
+                                selected = currentDestination?.route == item.route.name,
+                                icon = {
+                                    Icon(item.icon, contentDescription = null)
+                                },
+                                label = { Text(item.label) },
+                                onClick = {
+                                    navController.navigate(route = item.route.name) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = false
                                         }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
-                                )
-
-                            }
+                                }
+                            )
                         }
                     }
                 }
@@ -121,7 +116,7 @@ fun FirstAidApp() {
                             navController.navigate("${Route.GuideDetail.name}/$guideId")
                         },
                         onBackClick = { navController.navigateUp() },
-                        onClickSearchBar = { navController.navigate(Route.Search.name) }  // Added this line
+                        onClickSearchBar = { navController.navigate(Route.Search.name) }
                     )
                 }
 
@@ -134,16 +129,14 @@ fun FirstAidApp() {
                         context = context,
                         guide = guide,
                         onBackClick = { navController.navigateUp() },
-                        onBookmarkUpdate = { /* Здесь можно обновить другие экраны при необходимости */ },
-                        onShareClick = { /* Логика поделиться */ }
+                        onBookmarkUpdate = { /* Update bookmarks if necessary */ },
+                        onShareClick = { /* Share functionality */ }
                     )
                 }
 
                 composable(Route.Disclaimer.name) {
                     val prefsName = stringResource(R.string.show_disclaimer_prefs_name)
-
                     DisclaimerScreen(onAgreeClick = {
-                        // Disable disclaimer on application startup
                         val editor = MainActivity.settingsSharedPreferences.edit()
                         editor.putBoolean(prefsName, false)
                         editor.apply()
@@ -153,8 +146,9 @@ fun FirstAidApp() {
 
                 composable(Route.Main.name) {
                     MainScreen(
-                        onClickQuestionaireButton = {navController.navigate(Route.Questionnaire.name)},
-                        onClickGuidesButton =  {navController.navigate(Route.GuidesList.name) },
+                        onClickQuestionaireButton = { navController.navigate(Route.Questionnaire.name) },
+                        onClickGuidesButton = { navController.navigate(Route.GuidesList.name) },
+                        // Update this so the Hospitals button navigates to our HospitalScreen instead of HospitalsMapScreen
                         onClickHospitalsButton = { navController.navigate(Route.HospitalsMap.name) },
                         onClickSearchBar = { navController.navigate(Route.Search.name) },
                         onClickLegalInfoButton = { navController.navigate(Route.LegalInfo.name) }
@@ -180,16 +174,18 @@ fun FirstAidApp() {
                 }
                 composable(Route.Search.name) {
                     SearchScreen(
-                        onInstitutionClick = {
-                            navController.navigate(Route.HospitalsMap.name)
+                        onInstitutionClick = { hospitalId ->
+                            navController.navigate("${Route.HospitalDetail.name}/$hospitalId")
                         },
                         onBackClick = { navController.navigateUp() },
-                        guides = Datasource.guidesList,  // Pass the guides list
+                        guides = Datasource.guidesList,
+                        hospitals = Datasource.hospitalsList, // Add hospitals parameter
                         onGuideClick = { guideId ->
                             navController.navigate("${Route.GuideDetail.name}/$guideId")
                         }
                     )
                 }
+
                 composable(Route.HospitalsMap.name) {
                     HospitalsMapScreen(
                         onBackClick = { navController.navigateUp() }
@@ -215,11 +211,21 @@ fun FirstAidApp() {
                     QuestionnaireResultScreen(
                         matchingGuides = matchingGuides,
                         onBackClick = {
-                            navController.popBackStack(Route.Main.name, inclusive = false) // Возврат на главный экран
+                            navController.popBackStack(Route.Main.name, inclusive = false)
                         },
                         onGuideClick = { guideId ->
                             navController.navigate("${Route.GuideDetail.name}/$guideId")
                         }
+                    )
+                }
+
+                composable("${Route.HospitalDetail.name}/{HOSPITAL_ID}") { backStackEntry ->
+                    val hospitalId = backStackEntry.arguments?.getString("HOSPITAL_ID")?.toIntOrNull() ?: -1
+                    val hospital = Datasource.hospitalsList.firstOrNull { it.id == hospitalId } ?: return@composable
+
+                    HospitalDetailScreen(
+                        hospital = hospital,
+                        onBackClick = { navController.navigateUp() }
                     )
                 }
             }
