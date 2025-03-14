@@ -1,6 +1,6 @@
 package com.example.firstaid.model
 
-enum class HospitalType(value: String) {
+enum class HospitalType(val value: String) {
     HOSPITAL("Больница"),
     DENTISTRY("Стоматология"),
     TRAUMA_CENTER("Травмпункт"),
