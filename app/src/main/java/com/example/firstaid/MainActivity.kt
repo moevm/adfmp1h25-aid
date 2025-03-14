@@ -70,7 +70,7 @@ fun FirstAidApp() {
     val navigationItems = listOf(NavBarItem.Main, NavBarItem.Bookmarks, NavBarItem.About)
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    val routesWithoutBottomBar = listOf(Route.Disclaimer.name)
+    val routesWithoutBottomBar = listOf(Route.Disclaimer.name, Route.Search.name, Route.HospitalsMap.name)
 
     FirstAidTheme {
         Scaffold(modifier = Modifier.fillMaxSize(),
