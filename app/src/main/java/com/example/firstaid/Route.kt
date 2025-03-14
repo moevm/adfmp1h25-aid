@@ -15,5 +15,7 @@ sealed class Route(val name: String) {
 
     data object Questionnaire : Route("questionnaire")
     data object QuestionnaireResult : Route("questionnaireResult")
+
+    data object HospitalDetail : Route("hospital_detail")
 }
 

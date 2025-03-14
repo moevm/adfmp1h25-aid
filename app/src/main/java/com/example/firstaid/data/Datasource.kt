@@ -6,6 +6,7 @@ import com.example.firstaid.model.LegalInfo
 import com.example.firstaid.model.PageItem
 import com.example.firstaid.model.Question
 import com.example.firstaid.model.Step
+import com.example.firstaid.model.Hospital
 
 object Datasource {
     val legalInfoList = listOf(
@@ -121,6 +122,55 @@ object Datasource {
             ),
             tags = listOf("general")
         )
+    )
+
+    val hospitalsList = listOf(
+        Hospital(
+            id = 1,
+            name = "Больница №1",
+            address = "Ракитовская ул., 29",
+            phone = "+7 (812) 293-45-49",
+            workingHours = "09:00–16:00",
+            coordinates = "60.0922, 30.2368",
+            imageResId = R.drawable.sample_hospital
+        ),
+        Hospital(
+            id = 2,
+            name = "Поликлиника №5",
+            address = "7-я линия Васильевского острова, 64",
+            phone = "+7 (812) 242-38-58",
+            workingHours = "08:00–20:00",
+            coordinates = "59.9447, 30.2756",
+            imageResId = R.drawable.sample_hospital
+        ),
+        Hospital(
+            id = 3,
+            name = "Травмпункт №3",
+            address = "8-я линия Васильевского острова, 51",
+            phone = "+7 (812) 241-57-88",
+            workingHours = "Круглосуточно",
+            coordinates = "59.9434, 30.2759",
+            imageResId = R.drawable.sample_hospital
+        ),
+        Hospital(
+            id = 4,
+            name = "Станция №1",
+            address = "ул. Профессора Попова, 16Б",
+            phone = "+7 (812) 234-48-55",
+            workingHours = "Круглосуточно",
+            coordinates = "59.9709, 30.3099",
+            imageResId = R.drawable.sample_hospital
+        ),
+        Hospital(
+            id = 5,
+            name = "Отделение экстренной медицинской помощи",
+            address = "Будапештская ул., 3",
+            phone = "+7 (812) 705-29-70",
+            workingHours = "Круглосуточно",
+            coordinates = "59.8737, 30.3638",
+            imageResId = R.drawable.sample_hospital
+        )
+
     )
 
     // Функция фильтрации (добавить в объект Datasource)
