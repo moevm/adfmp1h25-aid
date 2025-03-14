@@ -89,7 +89,6 @@ private fun goToNextQuestion(
     if (currentQuestionIndex.value < questions.size - 1) {
         currentQuestionIndex.value++
     } else {
-        // Используем функцию фильтрации
         val matchingGuides = Datasource.getMatchingGuides(selectedTags)
         onFinish(matchingGuides)
     }

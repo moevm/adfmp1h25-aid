@@ -28,6 +28,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.firstaid.data.Datasource
+import com.example.firstaid.model.Guide
 import com.example.firstaid.ui.AboutScreen
 import com.example.firstaid.ui.BookmarksScreen
 import com.example.firstaid.ui.DisclaimerScreen
@@ -195,13 +196,13 @@ fun FirstAidApp() {
                     QuestionnaireScreen(
                         questions = Datasource.questions,
                         guides = Datasource.guidesList,
-                        onFinish = { selectedTags ->
-                            val matchingGuides = Datasource.getMatchingGuides(selectedTags)
+                        onFinish = { matchingGuides: List<Guide> -> // Явно указываем тип
                             val guideIds = matchingGuides.joinToString(",") { it.id.toString() }
                             navController.navigate("${Route.QuestionnaireResult.name}/$guideIds")
                         }
                     )
                 }
+
 
                 composable("${Route.QuestionnaireResult.name}/{GUIDE_IDS}") { backStackEntry ->
                     val guideIds = backStackEntry.arguments?.getString("GUIDE_IDS")
