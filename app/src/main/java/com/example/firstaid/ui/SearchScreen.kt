@@ -20,15 +20,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -37,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.example.firstaid.R
 import com.example.firstaid.model.Guide
 import com.example.firstaid.model.Hospital
-
+import androidx.compose.material3.AssistChipDefaults
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,19 +46,37 @@ fun SearchScreen(
     onGuideClick: (Int) -> Unit
 ) {
     var query by remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf<String?>(null) }
     val scrollState = rememberScrollState()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
 
-    // Hospital suggestions (can be replaced with dynamic data later)
-    val defaultOrganizationSuggestions = listOf("Больница №1", "Станция №7")
-    val defaultGuideSuggestions = listOf("Потеря сознания", "Ножевое ранение", "Вывих руки")
+    // Define category filters with keywords
+    val categoryFilters = mapOf(
+        "Учреждения" to setOf("Больница", "Госпиталь", "Центр"),
+        "Травмпункты" to setOf("Травмпункт"),
+        "Поликлиники" to setOf("Поликлиника")
+    )
 
+    // Filter hospitals based on query and category
+    val filteredHospitals = hospitals.filter { hospital ->
+        val matchesQuery = hospital.name.contains(query, ignoreCase = true) ||
+                hospital.address.contains(query, ignoreCase = true)
 
+        val matchesCategory = selectedCategory?.let { category ->
+            categoryFilters[category]?.any { keyword ->
+                hospital.name.contains(keyword, ignoreCase = true)
+            } ?: false
+        } ?: true
 
-    val categories = listOf("Учреждения", "Травмпункты", "Поликлиники")
+        matchesQuery && matchesCategory
+    }
+
+    // Filter guides based on query
+    val filteredGuides = guides.filter { guide ->
+        guide.title.contains(query, ignoreCase = true) ||
+                guide.description.contains(query, ignoreCase = true)
+    }
+
     Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -74,21 +89,15 @@ fun SearchScreen(
                         placeholder = { Text(text = stringResource(R.string.search_hint)) },
                         modifier = Modifier.fillMaxWidth(),
                         trailingIcon = {
-                            IconButton(onClick = { /* Handle search action */ }) {
-                                Icon(
-                                    imageVector = Icons.Default.Search,
-                                    contentDescription = "Search Icon"
-                                )
+                            IconButton(onClick = { /* Optional search action */ }) {
+                                Icon(Icons.Default.Search, "Search")
                             }
                         }
-                    ) { }
+                    ) {}
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
                     }
                 }
             )
@@ -99,60 +108,63 @@ fun SearchScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            // Row of category chips
+            // Category filter chips
             Row(
                 modifier = Modifier
                     .horizontalScroll(rememberScrollState())
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                categories.forEach { category ->
+                categoryFilters.keys.forEach { category ->
+                    val isSelected = selectedCategory == category
                     AssistChip(
-                        onClick = { query = category },
-                        label = { Text(category) }
-                    )
-                }
-            }
-
-            // "Учреждения" Section
-            Text(
-                text = "Учреждения",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(8.dp)
-            )
-            Column(modifier = Modifier.verticalScroll(scrollState)) {
-                hospitals.forEach { hospital ->
-                    SuggestionCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp),
-                        suggestion = hospital.name, // Use hospital.name
                         onClick = {
-                            onInstitutionClick(hospital.id) // Pass hospital.id
+                            selectedCategory = if (isSelected) null else category
+                        },
+                        label = { Text(category) },
+                        colors = if (isSelected) {
+                            AssistChipDefaults.assistChipColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                labelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        } else {
+                            AssistChipDefaults.assistChipColors()
                         }
                     )
                 }
             }
 
-            // "Руководство" Section - for guides
-            Text(
-                text = "Руководство",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(8.dp)
-            )
-            Column(
-                modifier = Modifier.verticalScroll(scrollState)
-            ) {
-                guides.forEach { guide ->
-                    SuggestionCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp),
-                        suggestion = guide.title,
-                        onClick = {
-                            onGuideClick(guide.id)
-                        }
-                    )
+            // Hospitals section
+            if (filteredHospitals.isNotEmpty()) {
+                Text(
+                    text = "Учреждения",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(8.dp)
+                )
+                Column(modifier = Modifier.verticalScroll(scrollState)) {
+                    filteredHospitals.forEach { hospital ->
+                        SuggestionCard(
+                            suggestion = hospital.name,
+                            onClick = { onInstitutionClick(hospital.id) }
+                        )
+                    }
+                }
+            }
+
+            // Guides section
+            if (filteredGuides.isNotEmpty()) {
+                Text(
+                    text = "Руководство",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(8.dp)
+                )
+                Column(modifier = Modifier.verticalScroll(scrollState)) {
+                    filteredGuides.forEach { guide ->
+                        SuggestionCard(
+                            suggestion = guide.title,
+                            onClick = { onGuideClick(guide.id) }
+                        )
+                    }
                 }
             }
         }
@@ -166,12 +178,16 @@ fun SuggestionCard(
     onClick: () -> Unit
 ) {
     OutlinedCard(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
         onClick = onClick
     ) {
         Text(
             text = suggestion,
-            modifier = Modifier.padding(20.dp),
+            modifier = Modifier
+                .padding(20.dp)
+                .fillMaxWidth(),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
