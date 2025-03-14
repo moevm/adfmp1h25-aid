@@ -7,6 +7,8 @@ import com.example.firstaid.model.PageItem
 import com.example.firstaid.model.Question
 import com.example.firstaid.model.Step
 import com.example.firstaid.model.Hospital
+import com.example.firstaid.model.HospitalType
+import org.osmdroid.util.GeoPoint
 
 object Datasource {
     val legalInfoList = listOf(
@@ -132,7 +134,9 @@ object Datasource {
             phone = "+7 (812) 293-45-49",
             workingHours = "09:00–16:00",
             coordinates = "60.0922, 30.2368",
-            imageResId = R.drawable.sample_hospital
+            imageResId = R.drawable.sample_hospital,
+            type = HospitalType.HOSPITAL,
+            geoPoint = GeoPoint(60.0922, 30.2368)
         ),
         Hospital(
             id = 2,
@@ -141,7 +145,9 @@ object Datasource {
             phone = "+7 (812) 242-38-58",
             workingHours = "08:00–20:00",
             coordinates = "59.9447, 30.2756",
-            imageResId = R.drawable.sample_hospital
+            imageResId = R.drawable.sample_hospital,
+            type = HospitalType.POLYCLINIC,
+            geoPoint = GeoPoint(59.9447, 30.2756)
         ),
         Hospital(
             id = 3,
@@ -150,7 +156,9 @@ object Datasource {
             phone = "+7 (812) 241-57-88",
             workingHours = "Круглосуточно",
             coordinates = "59.9434, 30.2759",
-            imageResId = R.drawable.sample_hospital
+            imageResId = R.drawable.sample_hospital,
+            type = HospitalType.TRAUMA_CENTER,
+            geoPoint = GeoPoint(59.9434, 30.2759)
         ),
         Hospital(
             id = 4,
@@ -159,7 +167,9 @@ object Datasource {
             phone = "+7 (812) 234-48-55",
             workingHours = "Круглосуточно",
             coordinates = "59.9709, 30.3099",
-            imageResId = R.drawable.sample_hospital
+            imageResId = R.drawable.sample_hospital,
+            type = HospitalType.HOSPITAL,  // Or create new type if needed
+            geoPoint = GeoPoint(59.9709, 30.3099)
         ),
         Hospital(
             id = 5,
@@ -168,9 +178,10 @@ object Datasource {
             phone = "+7 (812) 705-29-70",
             workingHours = "Круглосуточно",
             coordinates = "59.8737, 30.3638",
-            imageResId = R.drawable.sample_hospital
+            imageResId = R.drawable.sample_hospital,
+            type = HospitalType.HOSPITAL,  // Main hospital type for emergency
+            geoPoint = GeoPoint(59.8737, 30.3638)
         )
-
     )
 
     // Функция фильтрации (добавить в объект Datasource)
