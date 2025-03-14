@@ -27,6 +27,8 @@
     <string name="bookmarks_screen_title">Закладки</string>
 
     <string name="guides_list_screen_title">Список руководств</string>
+    <string name="guides_search_hint">Поиск по названию</string>
+    <string name="no_results">Ничего не найдено</string>
 
     <!--  About screen  -->
     <string name="about_screen_title">О приложении</string>
