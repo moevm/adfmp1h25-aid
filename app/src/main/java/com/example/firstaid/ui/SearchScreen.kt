@@ -104,6 +104,7 @@ fun SearchScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
+                .verticalScroll(scrollState)
         ) {
             // Category filter chips
             Row(
