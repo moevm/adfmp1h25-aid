@@ -184,7 +184,11 @@ fun FirstAidApp() {
                         onInstitutionClick = {
                             navController.navigate(Route.HospitalsMap.name)
                         },
-                        onBackClick = { navController.navigateUp() }
+                        onBackClick = { navController.navigateUp() },
+                        guides = Datasource.guidesList,  // Pass the guides list
+                        onGuideClick = { guideId ->
+                            navController.navigate("${Route.GuideDetail.name}/$guideId")
+                        }
                     )
                 }
                 composable(Route.HospitalsMap.name) {
