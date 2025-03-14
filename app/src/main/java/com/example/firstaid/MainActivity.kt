@@ -2,7 +2,6 @@ package com.example.firstaid
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.compose.foundation.layout.width
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -34,13 +33,13 @@ import com.example.firstaid.ui.BookmarksScreen
 import com.example.firstaid.ui.DisclaimerScreen
 import com.example.firstaid.ui.GuideDetailScreen
 import com.example.firstaid.ui.GuidesListScreen
+import com.example.firstaid.ui.HospitalsMapScreen
 import com.example.firstaid.ui.LegalInformationScreen
 import com.example.firstaid.ui.MainScreen
-import com.example.firstaid.ui.theme.FirstAidTheme
-import com.example.firstaid.ui.SearchScreen
-import com.example.firstaid.ui.HospitalsMapScreen
 import com.example.firstaid.ui.QuestionnaireResultScreen
 import com.example.firstaid.ui.QuestionnaireScreen
+import com.example.firstaid.ui.SearchScreen
+import com.example.firstaid.ui.theme.FirstAidTheme
 
 
 class MainActivity : ComponentActivity() {

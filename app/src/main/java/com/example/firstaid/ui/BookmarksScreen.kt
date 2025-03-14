@@ -1,6 +1,5 @@
 package com.example.firstaid.ui
 
-import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.firstaid.R
-import com.example.firstaid.data.BookmarkManager
+import com.example.firstaid.manager.BookmarkManager
 import com.example.firstaid.data.Datasource
 import com.example.firstaid.model.Guide
 
