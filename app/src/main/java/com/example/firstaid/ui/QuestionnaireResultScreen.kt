@@ -61,7 +61,7 @@ fun QuestionnaireResultScreen(
                 GuideCard(
                     guide = guide,
                     onClick = { onGuideClick(guide.id) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)
                 )
             }
         }
