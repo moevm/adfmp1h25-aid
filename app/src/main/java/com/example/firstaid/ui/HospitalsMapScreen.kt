@@ -132,9 +132,10 @@ fun OpenStreetMapView(context: Context) {
                         org.osmdroid.views.overlay.Marker.ANCHOR_BOTTOM
                     )
                     marker.title = hospital.name
-                    marker.snippet = hospital.type.value
-                    marker.image = getDrawable(context, hospital.imageResId)
-                    marker.subDescription = hospital.address
+                    marker.snippet = "${hospital.type.value}; ${hospital.address}"
+                    marker.image = getDrawable(context, hospital.imageResId!!)
+                    marker.subDescription = "Телефон: ${hospital.phone} " +
+                            " Часы работы: ${hospital.workingHours}"
                     overlays.add(marker)
                 }
             }
