@@ -61,9 +61,4 @@ object Datasource {
         )
     )
 
-    val questionnaireQuestions = listOf(
-        "Есть ли у пострадавшего дыхание?",
-        "Есть ли у пострадавшего пульс?",
-        "Есть ли видимые травмы?"
-    )
 }
