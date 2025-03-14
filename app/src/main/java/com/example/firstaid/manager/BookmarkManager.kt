@@ -1,4 +1,4 @@
-package com.example.firstaid.data
+package com.example.firstaid.manager
 
 import android.content.Context
 import androidx.core.content.edit
