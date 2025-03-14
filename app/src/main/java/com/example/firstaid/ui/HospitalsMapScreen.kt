@@ -32,6 +32,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HospitalsMapScreen(
+    hospitalId: Int,
     onBackClick: () -> Unit,
     onClickSearchBar: () -> Unit
 ) {
@@ -80,13 +81,13 @@ fun HospitalsMapScreen(
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
-            OpenStreetMapView(context)
+            OpenStreetMapView(context, hospitalId)
         }
     }
 }
 
 @Composable
-fun OpenStreetMapView(context: Context) {
+fun OpenStreetMapView(context: Context, hospitalId: Int) {
     AndroidView(
         modifier = Modifier.fillMaxSize(),
         factory = { ctx ->
@@ -136,6 +137,11 @@ fun OpenStreetMapView(context: Context) {
                     marker.image = getDrawable(context, hospital.imageResId!!)
                     marker.subDescription = "Телефон: ${hospital.phone} " +
                             " Часы работы: ${hospital.workingHours}"
+                    if (hospital.id == hospitalId) {
+                        marker.showInfoWindow()
+                        controller.setCenter(hospital.geoPoint)
+                        controller.setZoom(16.0)
+                    }
                     overlays.add(marker)
                 }
             }
