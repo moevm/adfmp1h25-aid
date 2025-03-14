@@ -4,5 +4,8 @@ data class Hospital(
     val id: Int,
     val name: String,
     val address: String,
-    val imageResId: Int? = null  // Optional image resource
+    val phone: String? = null,
+    val workingHours: String? = null,
+    val coordinates: String? = null,
+    val imageResId: Int? = null
 )
