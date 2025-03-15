@@ -46,7 +46,8 @@ fun MainScreen(
     onClickLegalInfoButton: () -> Unit,
     onClickHospitalsButton: () -> Unit,
     onClickGuidesButton: () -> Unit,
-    onClickSearchBar: () -> Unit
+    onClickSearchBar: () -> Unit,
+    onEmergencyCall: (String) -> Unit // Исправленный параметр
 ) {
     var showEmergencyDialog by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
@@ -106,7 +107,6 @@ fun MainScreen(
         }
     }
 
-    // Emergency Dialog
     if (showEmergencyDialog) {
         AlertDialog(
             onDismissRequest = { showEmergencyDialog = false },
@@ -116,22 +116,22 @@ fun MainScreen(
                     EmergencyNumberButton(
                         number = "112",
                         service = "Общая служба экстренной помощи",
-                        onClick = { /* Handle 112 call */ }
+                        onClick = { onEmergencyCall("tel:112") }
                     )
                     EmergencyNumberButton(
-                        number = "01",
+                        number = "101",
                         service = "Пожарная служба",
-                        onClick = { /* Handle 01 call */ }
+                        onClick = { onEmergencyCall("tel:101") }
                     )
                     EmergencyNumberButton(
-                        number = "02",
-                        service = "Скорая помощь",
-                        onClick = { /* Handle 02 call */ }
-                    )
-                    EmergencyNumberButton(
-                        number = "03",
+                        number = "102",
                         service = "Полиция",
-                        onClick = { /* Handle 03 call */ }
+                        onClick = { onEmergencyCall("tel:102") }
+                    )
+                    EmergencyNumberButton(
+                        number = "103",
+                        service = "Скорая помощь",
+                        onClick = { onEmergencyCall("tel:103") }
                     )
                 }
             },

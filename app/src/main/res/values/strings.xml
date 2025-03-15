@@ -22,6 +22,7 @@
     <string name="guides_list_button_title">Список руководств</string>
     <string name="hospitals_button_title">Ближайшие мед. учреждения</string>
     <string name="legal_info_button_title">Юридическая информация</string>
+    <string name="emergency_call_permission">Для совершения вызова необходимо разрешение</string>
 
     <!--  Bookmarks screen  -->
     <string name="bookmarks_screen_title">Закладки</string>

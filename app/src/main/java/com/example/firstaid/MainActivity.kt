@@ -1,6 +1,10 @@
 package com.example.firstaid
 
+import android.app.Activity
+import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,6 +15,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -18,10 +24,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -43,10 +53,16 @@ import com.example.firstaid.ui.QuestionnaireResultScreen
 import com.example.firstaid.ui.QuestionnaireScreen
 import com.example.firstaid.ui.SearchScreen
 import com.example.firstaid.ui.theme.FirstAidTheme
+import android.Manifest
+import android.content.Context
+import android.content.ContextWrapper
+import androidx.compose.runtime.setValue
 
 class MainActivity : ComponentActivity() {
     companion object {
+        const val REQUEST_CALL_PHONE = 101
         lateinit var settingsSharedPreferences: SharedPreferences
+        var pendingEmergencyNumber: String? = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +72,25 @@ class MainActivity : ComponentActivity() {
         setContent {
             FirstAidApp()
         }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CALL_PHONE && grantResults.isNotEmpty() &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED
+        ) {
+            pendingEmergencyNumber?.let { number ->
+                val intent = Intent(Intent.ACTION_CALL).apply {
+                    data = Uri.parse(number)
+                }
+                startActivity(intent)
+            }
+        }
+        pendingEmergencyNumber = null
     }
 }
 
@@ -73,6 +108,28 @@ fun FirstAidApp() {
     val currentDestination = navBackStackEntry?.destination
     val routesWithoutBottomBar =
         listOf(Route.Disclaimer.name, Route.Search.name, Route.HospitalsMap.name)
+    val context = LocalContext.current
+    var showPermissionDialog by remember { mutableStateOf(false) }
+
+    fun handleEmergencyCall(number: String) {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CALL_PHONE
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            val intent = Intent(Intent.ACTION_CALL).apply {
+                data = Uri.parse(number)
+            }
+            context.startActivity(intent)
+        } else {
+            MainActivity.pendingEmergencyNumber = number
+            ActivityCompat.requestPermissions(
+                context as Activity,
+                arrayOf(Manifest.permission.CALL_PHONE),
+                MainActivity.REQUEST_CALL_PHONE
+            )
+        }
+    }
 
     FirstAidTheme {
         Scaffold(modifier = Modifier.fillMaxSize(),
@@ -105,6 +162,7 @@ fun FirstAidApp() {
                 stringResource(R.string.show_disclaimer_prefs_name),
                 true
             )
+
 
             NavHost(
                 modifier = Modifier.padding(innerPadding),
@@ -155,7 +213,22 @@ fun FirstAidApp() {
                         onClickGuidesButton = { navController.navigate(Route.GuidesList.name) },
                         onClickHospitalsButton = { navController.navigate(Route.HospitalsMap.name) },
                         onClickSearchBar = { navController.navigate(Route.Search.name) },
-                        onClickLegalInfoButton = { navController.navigate(Route.LegalInfo.name) }
+                        onClickLegalInfoButton = { navController.navigate(Route.LegalInfo.name)},
+                        onEmergencyCall = { number ->
+                                if (ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.CALL_PHONE
+                                    ) != PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    showPermissionDialog = true
+                                    MainActivity.pendingEmergencyNumber = number
+                                } else {
+                                    val intent = Intent(Intent.ACTION_CALL).apply {
+                                        data = Uri.parse(number)
+                                    }
+                                    context.startActivity(intent)
+                                }
+                            }
                     )
                 }
 
@@ -250,6 +323,34 @@ fun FirstAidApp() {
                     )
                 }
             }
+            if (showPermissionDialog) {
+                AlertDialog(
+                    onDismissRequest = { showPermissionDialog = false },
+                    title = { Text("Разрешение требуется") },
+                    text = { Text("Для совершения вызова необходимо разрешение") },
+                    confirmButton = {
+                        Button(onClick = {
+                            ActivityCompat.requestPermissions(
+                                context as Activity,
+                                arrayOf(Manifest.permission.CALL_PHONE),
+                                MainActivity.REQUEST_CALL_PHONE
+                            )
+                            showPermissionDialog = false
+                        }) {
+                            Text("OK")
+                        }
+                    }
+                )
+            }
         }
     }
+}
+
+fun Context.findActivity(): Activity? {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
+    }
+    return null
 }
