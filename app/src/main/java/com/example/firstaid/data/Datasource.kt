@@ -134,7 +134,7 @@ object Datasource {
             phone = "+7 (812) 293-45-49",
             workingHours = "09:00–16:00",
             coordinates = "60.0922, 30.2368",
-            imageResId = R.drawable.sample_hospital,
+            imageResId = R.drawable.hospital_id_1,
             type = HospitalType.HOSPITAL,
             geoPoint = GeoPoint(60.0922, 30.2368)
         ),
@@ -145,7 +145,7 @@ object Datasource {
             phone = "+7 (812) 242-38-58",
             workingHours = "08:00–20:00",
             coordinates = "59.9447, 30.2756",
-            imageResId = R.drawable.sample_hospital,
+            imageResId = R.drawable.hospital_id_2,
             type = HospitalType.POLYCLINIC,
             geoPoint = GeoPoint(59.9447, 30.2756)
         ),
@@ -156,7 +156,7 @@ object Datasource {
             phone = "+7 (812) 241-57-88",
             workingHours = "Круглосуточно",
             coordinates = "59.9434, 30.2759",
-            imageResId = R.drawable.sample_hospital,
+            imageResId = R.drawable.hospital_id_3,
             type = HospitalType.TRAUMA_CENTER,
             geoPoint = GeoPoint(59.9434, 30.2759)
         ),
@@ -167,7 +167,7 @@ object Datasource {
             phone = "+7 (812) 234-48-55",
             workingHours = "Круглосуточно",
             coordinates = "59.9709, 30.3099",
-            imageResId = R.drawable.sample_hospital,
+            imageResId = R.drawable.hospital_id_4,
             type = HospitalType.HOSPITAL,  // Or create new type if needed
             geoPoint = GeoPoint(59.9709, 30.3099)
         ),
@@ -178,7 +178,7 @@ object Datasource {
             phone = "+7 (812) 705-29-70",
             workingHours = "Круглосуточно",
             coordinates = "59.8737, 30.3638",
-            imageResId = R.drawable.sample_hospital,
+            imageResId = R.drawable.hospital_id_5,
             type = HospitalType.HOSPITAL,  // Main hospital type for emergency
             geoPoint = GeoPoint(59.8737, 30.3638)
         )
