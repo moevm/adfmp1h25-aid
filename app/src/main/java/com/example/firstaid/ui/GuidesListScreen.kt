@@ -10,7 +10,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SortByAlpha
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,22 +34,35 @@ import androidx.compose.ui.unit.dp
 import com.example.firstaid.R
 import com.example.firstaid.model.Guide
 
+enum class SortOrder {
+    BY_TITLE,
+    BY_ID
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GuidesListScreen(
     modifier: Modifier = Modifier,
     guides: List<Guide>,
-    onGuideClick: (Int) -> Unit,    // Callback for navigating to guide details
-    onBackClick: () -> Unit,         // Callback for navigating back
-    onClickSearchBar: () -> Unit     // Callback to open the SearchScreen
+    onGuideClick: (Int) -> Unit,
+    onBackClick: () -> Unit,
+    onClickSearchBar: () -> Unit
 ) {
     var query by remember { mutableStateOf("") }
+    var sortOrder by remember { mutableStateOf(SortOrder.BY_TITLE) } // Состояние для сортировки
     val scrollState = rememberScrollState()
 
-    // Filter the list of guides based on the search query (case-insensitive)
-    val filteredGuides = guides.filter { guide ->
-        guide.title.contains(query, ignoreCase = true)
-    }
+    // Фильтрация и сортировка списка
+    val filteredGuides = guides
+        .filter { guide ->
+            guide.title.contains(query, ignoreCase = true)
+        }
+        .sortedWith(
+            when (sortOrder) {
+                SortOrder.BY_TITLE -> compareBy { it.title }
+                SortOrder.BY_ID -> compareBy { it.id }
+            }
+        )
 
     Scaffold(
         topBar = {
@@ -64,7 +79,7 @@ fun GuidesListScreen(
                     SearchBar(
                         query = query,
                         onQueryChange = { query = it },
-                        onSearch = { /* Additional search actions can be added here */ },
+                        onSearch = { /* Дополнительные действия при поиске */ },
                         active = false,
                         onActiveChange = { isActive ->
                             if (isActive) onClickSearchBar()
@@ -80,6 +95,23 @@ fun GuidesListScreen(
                             }
                         }
                     ) { }
+                },
+                actions = {
+                    // Кнопка сортировки
+                    IconButton(onClick = {
+                        sortOrder = when (sortOrder) {
+                            SortOrder.BY_TITLE -> SortOrder.BY_ID
+                            SortOrder.BY_ID -> SortOrder.BY_TITLE
+                        }
+                    }) {
+                        Icon(
+                            imageVector = when (sortOrder) {
+                                SortOrder.BY_TITLE -> Icons.Default.SortByAlpha
+                                SortOrder.BY_ID -> Icons.Default.Numbers
+                            },
+                            contentDescription = "Sort"
+                        )
+                    }
                 }
             )
         }
@@ -90,15 +122,12 @@ fun GuidesListScreen(
                 .verticalScroll(scrollState)
                 .padding(innerPadding)
         ) {
-            // Extra space between search bar and the list
             Spacer(modifier = Modifier.height(16.dp))
-            // Optional header text (e.g., "Руководство") for consistency with SearchScreen style
             Text(
                 text = stringResource(R.string.guides_list_screen_title),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
             )
-            // Display the filtered list of guides
             filteredGuides.forEach { guide ->
                 GuideCard(
                     modifier = Modifier
@@ -108,7 +137,6 @@ fun GuidesListScreen(
                     onClick = { onGuideClick(guide.id) }
                 )
             }
-            // Extra bottom space
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
