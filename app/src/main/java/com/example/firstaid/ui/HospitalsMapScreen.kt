@@ -1,14 +1,20 @@
 package com.example.firstaid.ui
 
 import android.content.Context
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -16,11 +22,15 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import com.example.firstaid.data.Datasource
 import org.osmdroid.api.IMapController
 import org.osmdroid.config.Configuration
@@ -28,6 +38,8 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import android.content.pm.PackageManager
+import android.location.LocationManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,6 +49,32 @@ fun HospitalsMapScreen(
     onClickSearchBar: () -> Unit
 ) {
     val context = LocalContext.current
+    val userLocation = remember { mutableStateOf<org.osmdroid.util.GeoPoint?>(null) }
+    val mapView = remember { mutableStateOf<MapView?>(null) }
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (isGranted) {
+                userLocation.value = getLastKnownLocation(context)
+                userLocation.value?.let { location ->
+                    mapView.value?.controller?.setCenter(location)
+                }
+            }
+        }
+    )
+
+    LaunchedEffect(Unit) {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            userLocation.value = getLastKnownLocation(context)
+        } else {
+            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -73,6 +111,31 @@ fun HospitalsMapScreen(
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    if (ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        userLocation.value = getLastKnownLocation(context)
+                        userLocation.value?.let { location ->
+                            mapView.value?.controller?.setCenter(location)
+                        }
+                    } else {
+                        locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    }
+                },
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MyLocation,
+                    contentDescription = "Update Location",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     ) { innerPadding ->
         Box(
@@ -81,13 +144,22 @@ fun HospitalsMapScreen(
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
-            OpenStreetMapView(context, hospitalId)
+            OpenStreetMapView(
+                context = context,
+                hospitalId = hospitalId,
+                userLocation = userLocation.value,
+                onMapViewCreated = { mapView.value = it }
+            )
         }
     }
 }
-
 @Composable
-fun OpenStreetMapView(context: Context, hospitalId: Int) {
+fun OpenStreetMapView(
+    context: Context,
+    hospitalId: Int,
+    userLocation: org.osmdroid.util.GeoPoint?,
+    onMapViewCreated: (MapView) -> Unit
+) {
     AndroidView(
         modifier = Modifier.fillMaxSize(),
         factory = { ctx ->
@@ -99,12 +171,13 @@ fun OpenStreetMapView(context: Context, hospitalId: Int) {
 
                 val controller: IMapController = controller
                 controller.setZoom(14.0) // Default zoom level
-                controller.setCenter(
-                    org.osmdroid.util.GeoPoint(
-                        59.9343,
-                        30.3351
-                    )
-                ) // Saint Petersburg center
+
+                val defaultLocation = org.osmdroid.util.GeoPoint(59.9343, 30.3351)
+                controller.setCenter(defaultLocation)
+
+                userLocation?.let { location ->
+                    controller.setCenter(location)
+                }
 
                 val myLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(ctx), this)
                 myLocationOverlay.enableMyLocation()
@@ -113,10 +186,10 @@ fun OpenStreetMapView(context: Context, hospitalId: Int) {
 
                 myLocationOverlay.runOnFirstFix {
                     post {
-                        val userLocation = myLocationOverlay.myLocation
-                        if (userLocation != null) {
-                            controller.setCenter(userLocation) // Move map to user's location
-                            controller.animateTo(userLocation)
+                        val location = myLocationOverlay.myLocation
+                        if (location != null) {
+                            controller.setCenter(location)
+                            controller.animateTo(location)
                         }
                     }
                 }
@@ -144,7 +217,37 @@ fun OpenStreetMapView(context: Context, hospitalId: Int) {
                     }
                     overlays.add(marker)
                 }
+
+                // Передаем MapView в родительский компонент
+                onMapViewCreated(this)
             }
         }
     )
+}
+
+private fun getLastKnownLocation(context: Context): org.osmdroid.util.GeoPoint? {
+    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+    // Проверяем наличие разрешения на доступ к геолокации
+    return if (ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    ) {
+        try {
+            // Получаем последнее известное местоположение
+            val lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+
+            lastKnownLocation?.let {
+                org.osmdroid.util.GeoPoint(it.latitude, it.longitude)
+            }
+        } catch (e: SecurityException) {
+            // Обрабатываем исключение, если доступ к местоположению отклонен
+            null
+        }
+    } else {
+        // Если разрешение не предоставлено, возвращаем null
+        null
+    }
 }
